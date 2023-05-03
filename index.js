@@ -21,11 +21,14 @@ async function start() {
         OBS_DIMENSIONS: [40, 90],
         // Number of terrain pieces on the screen
         // The pieces stretch so that they fill the screen
-        TERRAIN_PER_SCREEN: 30,
+        TERRAIN_PER_SCREEN: 50,
+
+        BACKGROUND_COLOR: "#373b38",
+        OBSTACLE_COLOR: "#6d7ec7"
     }
 
     let bkcolor = new Rectangle(getWidth(), getHeight());
-    bkcolor.setColor(Color.blue);
+    bkcolor.setColor(config.BACKGROUND_COLOR);
     add(bkcolor);
 
 
@@ -77,7 +80,7 @@ async function start() {
         for (let i = 0; i < config.NUM_OBSTACLES; i++) {
             let obstacle = new Rectangle(config.OBS_DIMENSIONS[0], config.OBS_DIMENSIONS[1]);
             obstacle.setPosition(getWidth() + i * (getWidth()/config.NUM_OBSTACLES), Randomizer.nextInt(0, getHeight() - config.OBS_DIMENSIONS[1]));
-            obstacle.setColor(Color.green);
+            obstacle.setColor(config.OBSTACLE_COLOR);
             add(obstacle);
             obstacles.push(obstacle);
         }
@@ -90,14 +93,14 @@ async function start() {
             // Bottom of screen
             let terrainPiece = new Rectangle(getWidth() / config.TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
             terrainPiece.setPosition(i * (getWidth() / config.TERRAIN_PER_SCREEN), getHeight() - terrainPiece.getHeight());
-            terrainPiece.setColor(Color.green);
+            terrainPiece.setColor(config.OBSTACLE_COLOR);
             add(terrainPiece);
             terrain.push(terrainPiece);
 
             // Top of screen
             terrainPiece = new Rectangle(getWidth() / config.TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
             terrainPiece.setPosition(i * (getWidth() / config.TERRAIN_PER_SCREEN), 0);
-            terrainPiece.setColor(Color.green);
+            terrainPiece.setColor(config.OBSTACLE_COLOR);
             add(terrainPiece);
             terrain.push(terrainPiece);
         }
