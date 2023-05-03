@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <script type="module">
+        import * as CHSJSLIB from './node_modules/chs-js-lib/dist/chs.mjs'
+        window.CHS = CHSJSLIB
+        const AudioInstance = new CHSJSLIB.AudioManager({
+            onError: (error, type) => {
+                throw error;
+            },
+        });
+        const GraphicsInstance = new CHSJSLIB.Graphics({
+            onError: (error, type) => {
+                GraphicsInstance.shouldUpdate = false;
+                GraphicsInstance.resetAllTimers();
+                throw error;
+            },
+        });
+        // eslint-disable-next-line no-extend-native
+
+        window.Grid = CHSJSLIB.Grid;
+        window.Set = CHSJSLIB.ExtendedSet;
+        window.Stack = CHSJSLIB.Stack;
+        window.Queue = CHSJSLIB.Queue;
+        window.Vector = CHSJSLIB.Vector;
+        window.Randomizer = CHSJSLIB.Randomizer;
+
+        window.add = GraphicsInstance.add.bind(GraphicsInstance);
+        window.getWidth = GraphicsInstance.getWidth.bind(GraphicsInstance);
+        window.getHeight = GraphicsInstance.getHeight.bind(GraphicsInstance);
+        window.mouseClickMethod = GraphicsInstance.mouseClickMethod.bind(GraphicsInstance);
+        window.mouseDownMethod = GraphicsInstance.mouseDownMethod.bind(GraphicsInstance);
+        window.mouseUpMethod = GraphicsInstance.mouseUpMethod.bind(GraphicsInstance);
+        window.waitForClick = GraphicsInstance.waitForClick.bind(GraphicsInstance);
+        window.mouseMoveMethod = GraphicsInstance.mouseMoveMethod.bind(GraphicsInstance);
+        window.mouseDragMethod = GraphicsInstance.mouseDragMethod.bind(GraphicsInstance);
+        window.stopAllTimers = GraphicsInstance.stopAllTimers.bind(GraphicsInstance);
+        window.setMainTimer = GraphicsInstance.setMainTimer.bind(GraphicsInstance);
+        window.stopTimer = GraphicsInstance.stopTimer.bind(GraphicsInstance);
+        window.setTimer = GraphicsInstance.setTimer.bind(GraphicsInstance);
+        window.keyDownMethod = GraphicsInstance.keyDownMethod.bind(GraphicsInstance);
+        window.keyUpMethod = GraphicsInstance.keyUpMethod.bind(GraphicsInstance);
+        window.isKeyPressed = GraphicsInstance.isKeyPressed.bind(GraphicsInstance);
+        window.removeAll = GraphicsInstance.removeAll.bind(GraphicsInstance);
+        window.remove = GraphicsInstance.remove.bind(GraphicsInstance);
+        window.setBackgroundColor = GraphicsInstance.setBackgroundColor.bind(GraphicsInstance);
+        window.getElementAt = GraphicsInstance.getElementAt.bind(GraphicsInstance);
+        window.setSize = GraphicsInstance.setSize.bind(GraphicsInstance);
+        window.setFullscreen = GraphicsInstance.setFullscreen.bind(GraphicsInstance);
+        window.fullReset = GraphicsInstance.fullReset.bind(GraphicsInstance);
+        window.audioChangeMethod = AudioInstance.audioChangeMethod.bind(AudioInstance);
+
+        window.Arc = CHSJSLIB.Arc;
+        window.Audio = CHSJSLIB.Audio;
+        window.Circle = CHSJSLIB.Circle;
+        window.Color = CHSJSLIB.Color;
+        window.getDistance = CHSJSLIB.getDistance;
+        window.Group = CHSJSLIB.Group;
+        window.ImageLibrary = CHSJSLIB.ImageLibrary;
+        window.Keyboard = CHSJSLIB.Keyboard;
+        window.Line = CHSJSLIB.Line;
+        window.map = CHSJSLIB.map;
+        window.Oval = CHSJSLIB.Oval;
+        window.Polygon = CHSJSLIB.Polygon;
+        window.Randomizer = CHSJSLIB.Randomizer;
+        window.Rectangle = CHSJSLIB.Rectangle;
+        window.Sound = CHSJSLIB.Sound;
+        window.Stack = CHSJSLIB.Stack;
+        window.Text = CHSJSLIB.Text;
+        window.Thing = CHSJSLIB.Thing;
+        window.WebImage = CHSJSLIB.WebImage;
+
+        window.__graphics__ = GraphicsInstance;
+
+        import run from './index.js'
+        run();
+    </script>
+</head>
+
+</html>
