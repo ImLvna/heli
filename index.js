@@ -6,6 +6,8 @@ async function start() {
 
     const OBS_DIMENSIONS = [50, 100];
 
+    const TERRAIN_PER_SCREEN = 30;
+
     let bkcolor = new Rectangle(getWidth(), getHeight());
     bkcolor.setColor(Color.blue);
     add(bkcolor);
@@ -24,7 +26,7 @@ async function start() {
     let died = false;
 
     let obstacles = [];
-
+    let terrain = [];
 
     let deathtext = new Text("You Died");
     deathtext.setPosition(getWidth() / 2 - deathtext.getWidth()/2, getHeight() / 2 - deathtext.getHeight()/2);
@@ -43,6 +45,27 @@ async function start() {
         }
     }
 
+    function genTerrain() {
+        terrain.forEach(remove);
+        terrain = [];
+        for (let i = 0; i < TERRAIN_PER_SCREEN; i++) {
+            // Bottom of screen
+            let terrainPiece = new Rectangle(getWidth() / TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
+            terrainPiece.setPosition(i * (getWidth() / TERRAIN_PER_SCREEN), getHeight() - terrainPiece.getHeight());
+            terrainPiece.setColor(Color.green);
+            add(terrainPiece);
+            terrain.push(terrainPiece);
+
+            // Top of screen
+            terrainPiece = new Rectangle(getWidth() / TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
+            terrainPiece.setPosition(i * (getWidth() / TERRAIN_PER_SCREEN), 0);
+            terrainPiece.setColor(Color.green);
+            add(terrainPiece);
+            terrain.push(terrainPiece);
+        }
+    }
+
+
     function die() {
         clearInterval(gameloop);
         add(deathtext);
@@ -50,6 +73,7 @@ async function start() {
     }
 
     function setup() {
+        genTerrain();
         genObstacles();
     }
     
@@ -74,6 +98,26 @@ async function start() {
             i.move(-5, 0);
 
             // Check if the helicopter is touching the obstacle
+            if (heli.getX() + heli.getWidth() > i.getX() && heli.getX() < i.getX() + i.getWidth()) {
+                if (heli.getY() < i.getY() + i.getHeight() && heli.getY() + heli.getHeight() > i.getY()) {
+                    return die();
+                }
+            }
+        });
+
+        // let isHalf = false;
+        terrain.forEach((i, index)=>{
+            // if (index * 2 == terrain.length) isHalf = true;
+
+            if (i.getX() + i.getWidth() < 0) {
+                i.setPosition(getWidth(), i.getY())
+            //     i.setSize(i.getWidth(), Randomizer.nextInt(0, getHeight() / 10));
+            //     if (!isHalf) {
+            //         i.setPosition(i.getX(), getHeight() - i.getHeight());
+            //     }
+            }
+            i.move(-5, 0);
+
             if (heli.getX() + heli.getWidth() > i.getX() && heli.getX() < i.getX() + i.getWidth()) {
                 if (heli.getY() < i.getY() + i.getHeight() && heli.getY() + heli.getHeight() > i.getY()) {
                     return die();
