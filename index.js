@@ -67,8 +67,18 @@ async function start() {
         heli.move(0, velocity);
 
         obstacles.forEach(i=>{
+
+            // Reset the obstacle with a new Y position if it goes off the screen
             if (i.getX() + i.getWidth() < 0) i.setPosition(getWidth(), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+            
             i.move(-5, 0);
+
+            // Check if the helicopter is touching the obstacle
+            if (heli.getX() + heli.getWidth() > i.getX() && heli.getX() < i.getX() + i.getWidth()) {
+                if (heli.getY() < i.getY() + i.getHeight() && heli.getY() + heli.getHeight() > i.getY()) {
+                    return die();
+                }
+            }
         });
     }
     
