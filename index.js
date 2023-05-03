@@ -2,6 +2,10 @@ async function start() {
 
     const MAX_VELOCITY = 10;
 
+    const NUM_OBSTACLES = 5;
+
+    const OBS_DIMENSIONS = [50, 100];
+
     let bkcolor = new Rectangle(getWidth(), getHeight());
     bkcolor.setColor(Color.blue);
     add(bkcolor);
@@ -19,14 +23,34 @@ async function start() {
 
     let died = false;
 
+    let obstacles = [];
+
+
     let deathtext = new Text("You Died");
     deathtext.setPosition(getWidth() / 2 - deathtext.getWidth()/2, getHeight() / 2 - deathtext.getHeight()/2);
     deathtext.setColor(Color.red);
+
+
+    function genObstacles() {
+        obstacles.forEach(remove);
+        obstacles = [];
+        for (let i = 0; i < NUM_OBSTACLES; i++) {
+            let obstacle = new Rectangle(OBS_DIMENSIONS[0], OBS_DIMENSIONS[1]);
+            obstacle.setPosition(getWidth() + i * (getWidth()/NUM_OBSTACLES), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+            obstacle.setColor(Color.green);
+            add(obstacle);
+            obstacles.push(obstacle);
+        }
+    }
 
     function die() {
         clearInterval(gameloop);
         add(deathtext);
         died = true;
+    }
+
+    function setup() {
+        genObstacles();
     }
     
     function game() {
@@ -41,8 +65,14 @@ async function start() {
         if (touchingBottom || touchingTop) return die();
         
         heli.move(0, velocity);
+
+        obstacles.forEach(i=>{
+            if (i.getX() + i.getWidth() < 0) i.setPosition(getWidth(), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+            i.move(-5, 0);
+        });
     }
     
+    setup();
     let gameloop = setInterval(() => game(), 40);
 
 
@@ -54,6 +84,7 @@ async function start() {
             remove(deathtext);
             velocity = 0;
             heli.setPosition(100, getHeight() / 2);
+            setup();
             gameloop = setInterval(() => game(), 40);
         }
     })
