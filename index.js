@@ -1,12 +1,28 @@
+/*
+ADDITIONS:
+
+- Added speeding up
+- Added spacebar support
+
+*/
+
+
 async function start() {
 
-    const MAX_VELOCITY = 10;
 
-    const NUM_OBSTACLES = 5;
-
-    const OBS_DIMENSIONS = [50, 100];
-
-    const TERRAIN_PER_SCREEN = 30;
+    const config = {
+        //Show current frame
+        DEBUGVIEW: true,
+        // Max velocity of the helicopter
+        MAX_VELOCITY: 10,
+        // Number of obstacles on the screen
+        NUM_OBSTACLES: 5,
+        // Dimensions of the obstacles
+        OBS_DIMENSIONS: [40, 90],
+        // Number of terrain pieces on the screen
+        // The pieces stretch so that they fill the screen
+        TERRAIN_PER_SCREEN: 30,
+    }
 
     let bkcolor = new Rectangle(getWidth(), getHeight());
     bkcolor.setColor(Color.blue);
@@ -27,6 +43,8 @@ async function start() {
 
     let loopIndex = 0;
 
+    let speed = 5;
+
     let clicking = false;
 
     let died = false;
@@ -44,13 +62,21 @@ async function start() {
     scoretext.setPosition(10, 50);
     scoretext.setColor(Color.white);
 
+    let curframe;
+    if (config.DEBUGVIEW) {
+        curframe = new Text("Frame: " + loopIndex);
+        curframe.setPosition(0, getHeight() - curframe.getHeight());
+        curframe.setColor(Color.white);
+        add(curframe);
+    }
+
 
     function genObstacles() {
         obstacles.forEach(remove);
         obstacles = [];
-        for (let i = 0; i < NUM_OBSTACLES; i++) {
-            let obstacle = new Rectangle(OBS_DIMENSIONS[0], OBS_DIMENSIONS[1]);
-            obstacle.setPosition(getWidth() + i * (getWidth()/NUM_OBSTACLES), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+        for (let i = 0; i < config.NUM_OBSTACLES; i++) {
+            let obstacle = new Rectangle(config.OBS_DIMENSIONS[0], config.OBS_DIMENSIONS[1]);
+            obstacle.setPosition(getWidth() + i * (getWidth()/config.NUM_OBSTACLES), Randomizer.nextInt(0, getHeight() - config.OBS_DIMENSIONS[1]));
             obstacle.setColor(Color.green);
             add(obstacle);
             obstacles.push(obstacle);
@@ -60,17 +86,17 @@ async function start() {
     function genTerrain() {
         terrain.forEach(remove);
         terrain = [];
-        for (let i = 0; i < TERRAIN_PER_SCREEN; i++) {
+        for (let i = 0; i < config.TERRAIN_PER_SCREEN; i++) {
             // Bottom of screen
-            let terrainPiece = new Rectangle(getWidth() / TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
-            terrainPiece.setPosition(i * (getWidth() / TERRAIN_PER_SCREEN), getHeight() - terrainPiece.getHeight());
+            let terrainPiece = new Rectangle(getWidth() / config.TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
+            terrainPiece.setPosition(i * (getWidth() / config.TERRAIN_PER_SCREEN), getHeight() - terrainPiece.getHeight());
             terrainPiece.setColor(Color.green);
             add(terrainPiece);
             terrain.push(terrainPiece);
 
             // Top of screen
-            terrainPiece = new Rectangle(getWidth() / TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
-            terrainPiece.setPosition(i * (getWidth() / TERRAIN_PER_SCREEN), 0);
+            terrainPiece = new Rectangle(getWidth() / config.TERRAIN_PER_SCREEN, Randomizer.nextInt(0, getHeight() / 10));
+            terrainPiece.setPosition(i * (getWidth() / config.TERRAIN_PER_SCREEN), 0);
             terrainPiece.setColor(Color.green);
             add(terrainPiece);
             terrain.push(terrainPiece);
@@ -92,6 +118,10 @@ async function start() {
         loopIndex = 0;
         remove(scoretext)
         add(scoretext);
+        if (config.DEBUGVIEW) {
+            remove(curframe);
+            add(curframe);
+        }
         scoretext.setText("Score: " + score);
 
     }
@@ -100,8 +130,8 @@ async function start() {
         if (clicking) velocity -= 1;
         else velocity += 1;
         
-        if (velocity > MAX_VELOCITY) velocity = MAX_VELOCITY;
-        if (velocity < -MAX_VELOCITY) velocity = -MAX_VELOCITY;
+        if (velocity > config.MAX_VELOCITY) velocity = config.MAX_VELOCITY;
+        if (velocity < -config.MAX_VELOCITY) velocity = -config.MAX_VELOCITY;
        
         let touchingBottom = heli.getY() + velocity > getHeight() - heli.getHeight();
         let touchingTop = heli.getY() + velocity < 0;
@@ -114,11 +144,11 @@ async function start() {
 
             // Reset the obstacle with a new Y position if it goes off the screen
             if (i.getX() + i.getWidth() < 0) {
-                i.setPosition(getWidth(), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+                i.setPosition(getWidth(), Randomizer.nextInt(0, getHeight() - config.OBS_DIMENSIONS[1]));
                 toLeft --;
             }
             
-            i.move(-5, 0);
+            i.move(-speed, 0);
 
             // Check if the helicopter is touching the obstacle
             if (heli.getX() + heli.getWidth() > i.getX() && heli.getX() < i.getX() + i.getWidth()) {
@@ -150,7 +180,7 @@ async function start() {
             //         i.setPosition(i.getX(), getHeight() - i.getHeight());
             //     }
             }
-            i.move(-5, 0);
+            i.move(-speed, 0);
 
             if (heli.getX() + heli.getWidth() > i.getX() && heli.getX() < i.getX() + i.getWidth()) {
                 if (heli.getY() < i.getY() + i.getHeight() && heli.getY() + heli.getHeight() > i.getY()) {
@@ -160,7 +190,7 @@ async function start() {
         });
 
         dust.forEach(i=>{
-            i.move(-5, 0);
+            i.move(-speed, 0);
             if (i.getX() < 0) remove(i);
 
             i.setRadius(i.getRadius() - 0.1);
@@ -174,14 +204,20 @@ async function start() {
             dust.push(dustParticle);
         }
         loopIndex++;
+
+        if (config.DEBUGVIEW) curframe.setText("Frame: " + loopIndex);
+
+        if (loopIndex % 200 == 0) {
+            speed += 1;
+            console.log("Speeding up to " + speed);
+        }
+
     }
     
     setup();
-    let gameloop = setInterval(() => game(), 40);
+    let gameloop = setInterval(()=>game(), 40);
 
-
-    mouseUpMethod(() => clicking = false);
-    mouseDownMethod(() => {
+    function onClick() {
         clicking = true;
         if (died) {
             died = false;
@@ -189,13 +225,21 @@ async function start() {
             velocity = 0;
             score = 0;
             toLeft = 0;
+            speed = 5;
             heli.setPosition(100, getHeight() / 2);
             setup();
             gameloop = setInterval(() => game(), 40);
         }
-    })
-}
+    }
 
+    mouseUpMethod(() => clicking = false);
+    mouseDownMethod(onClick);
+
+    // Spacebar
+    keyDownMethod((e) => e.keyCode == 32 && onClick());
+    keyUpMethod((e) => e.keyCode == 32 && (clicking = false));
+
+}
 
 /*Hi mr finelli, im developing this in vscode
 instead of codehs editor. Because of how i have
