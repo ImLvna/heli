@@ -166,8 +166,8 @@ async function start() {
             i.setRadius(i.getRadius() - 0.1);
         });
 
-        if (loopIndex % 5 == 0) {
-            let dustParticle = new Circle(5);
+        if (loopIndex % 2 == 0) {
+            let dustParticle = new Circle(4);
             dustParticle.setPosition(heli.getX() + heli.getWidth() / 2, heli.getY() + heli.getHeight() / 2);
             dustParticle.setColor('#ccc');
             add(dustParticle);
