@@ -21,6 +21,10 @@ async function start() {
 
     let velocity = 0;
 
+    let score = 0;
+
+    let toLeft = 0;
+
     let clicking = false;
 
     let died = false;
@@ -31,6 +35,10 @@ async function start() {
     let deathtext = new Text("You Died");
     deathtext.setPosition(getWidth() / 2 - deathtext.getWidth()/2, getHeight() / 2 - deathtext.getHeight()/2);
     deathtext.setColor(Color.red);
+
+    let scoretext = new Text("Score: " + score);
+    scoretext.setPosition(10, 50);
+    scoretext.setColor(Color.white);
 
 
     function genObstacles() {
@@ -75,6 +83,10 @@ async function start() {
     function setup() {
         genTerrain();
         genObstacles();
+        remove(scoretext)
+        add(scoretext);
+        scoretext.setText("Score: " + score);
+
     }
     
     function game() {
@@ -90,10 +102,14 @@ async function start() {
         
         heli.move(0, velocity);
 
+        let numToLeft = 0;
         obstacles.forEach(i=>{
 
             // Reset the obstacle with a new Y position if it goes off the screen
-            if (i.getX() + i.getWidth() < 0) i.setPosition(getWidth(), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+            if (i.getX() + i.getWidth() < 0) {
+                i.setPosition(getWidth(), Randomizer.nextInt(0, getHeight() - OBS_DIMENSIONS[1]));
+                toLeft --;
+            }
             
             i.move(-5, 0);
 
@@ -103,7 +119,18 @@ async function start() {
                     return die();
                 }
             }
+
+            // Check if the helicopter has passed the obstacle
+            if (heli.getX() > i.getX() + i.getWidth()) {
+                numToLeft++;
+            }
         });
+
+        if (numToLeft > toLeft) {
+            score++;
+            toLeft = numToLeft;
+            scoretext.setText("Score: " + score);
+        }
 
         // let isHalf = false;
         terrain.forEach((i, index)=>{
@@ -137,6 +164,8 @@ async function start() {
             died = false;
             remove(deathtext);
             velocity = 0;
+            score = 0;
+            toLeft = 0;
             heli.setPosition(100, getHeight() / 2);
             setup();
             gameloop = setInterval(() => game(), 40);
