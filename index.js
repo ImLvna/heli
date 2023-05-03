@@ -25,12 +25,16 @@ async function start() {
 
     let toLeft = 0;
 
+    let loopIndex = 0;
+
     let clicking = false;
 
     let died = false;
 
     let obstacles = [];
     let terrain = [];
+
+    let dust = [];
 
     let deathtext = new Text("You Died");
     deathtext.setPosition(getWidth() / 2 - deathtext.getWidth()/2, getHeight() / 2 - deathtext.getHeight()/2);
@@ -83,6 +87,9 @@ async function start() {
     function setup() {
         genTerrain();
         genObstacles();
+        dust.forEach(remove);
+        dust = [];
+        loopIndex = 0;
         remove(scoretext)
         add(scoretext);
         scoretext.setText("Score: " + score);
@@ -151,6 +158,22 @@ async function start() {
                 }
             }
         });
+
+        dust.forEach(i=>{
+            i.move(-5, 0);
+            if (i.getX() < 0) remove(i);
+
+            i.setRadius(i.getRadius() - 0.1);
+        });
+
+        if (loopIndex % 5 == 0) {
+            let dustParticle = new Circle(5);
+            dustParticle.setPosition(heli.getX() + heli.getWidth() / 2, heli.getY() + heli.getHeight() / 2);
+            dustParticle.setColor('#ccc');
+            add(dustParticle);
+            dust.push(dustParticle);
+        }
+        loopIndex++;
     }
     
     setup();
